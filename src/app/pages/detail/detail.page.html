@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start"><ion-back-button defaultHref="/home"></ion-back-button></ion-buttons>
+    <ion-title>Item details</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (!store.loaded()) {
+    <div class="center"><ion-spinner name="crescent"></ion-spinner></div>
+  } @else if (item(); as it) {
+    @if (it.photo) {
+      <img class="photo" [src]="it.photo" [alt]="it.title" />
+    }
+    <div class="title-row">
+      <h1>{{ it.title }}</h1>
+      <ion-badge [color]="it.resolved ? 'medium' : it.type === 'lost' ? 'danger' : 'success'">
+        {{ it.resolved ? 'returned' : it.type }}
+      </ion-badge>
+    </div>
+    <p class="meta">{{ it.category }} · reported {{ it.createdAt | date: 'MMM d, y, h:mm a' }}</p>
+
+    @if (it.description) { <p>{{ it.description }}</p> }
+
+    <h4>Contact</h4>
+    <p>{{ it.contact }}</p>
+
+    @if (it.locationNote) {
+      <h4>Place</h4>
+      <p>{{ it.locationNote }}</p>
+    }
+
+    @if (it.lat != null && it.lng != null) {
+      <div class="map-box"><app-map-view [lat]="it.lat" [lng]="it.lng"></app-map-view></div>
+    }
+
+    <ion-button expand="block" [color]="it.resolved ? 'medium' : 'success'" (click)="toggleResolved()">
+      <ion-icon slot="start" [name]="it.resolved ? 'refresh' : 'checkmark-circle'"></ion-icon>
+      {{ it.resolved ? 'Mark as active again' : 'Mark as returned' }}
+    </ion-button>
+    <ion-button expand="block" fill="outline" color="danger" (click)="confirmDelete()">
+      <ion-icon slot="start" name="trash"></ion-icon>Delete report
+    </ion-button>
+  } @else {
+    <div class="center"><p>This report no longer exists.</p></div>
+  }
+</ion-content>

@@ -1,0 +1,7 @@
+.center { display: flex; justify-content: center; align-items: center; height: 60%; color: var(--ion-color-medium); }
+.photo { width: 100%; max-height: 280px; object-fit: cover; border-radius: 12px; }
+.title-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+h1 { margin: 12px 0 4px; font-size: 1.4rem; }
+h4 { margin: 16px 0 4px; }
+.meta { color: var(--ion-color-medium); margin-top: 0; }
+.map-box { height: 220px; margin: 16px 0; }

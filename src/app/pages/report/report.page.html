@@ -1,0 +1,65 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start"><ion-back-button defaultHref="/home"></ion-back-button></ion-buttons>
+    <ion-title>Report an item</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <ion-segment [value]="form.controls.type.value" (ionChange)="onType($event)">
+      <ion-segment-button value="lost"><ion-label>I lost something</ion-label></ion-segment-button>
+      <ion-segment-button value="found"><ion-label>I found something</ion-label></ion-segment-button>
+    </ion-segment>
+
+    <ion-input class="field" label="Item name *" labelPlacement="floating" fill="outline" formControlName="title"
+      placeholder="e.g. Black umbrella" maxlength="60"></ion-input>
+    @if (showError('title')) {
+      <ion-note color="danger">Enter at least 3 characters.</ion-note>
+    }
+
+    <ion-select class="field" label="Category" labelPlacement="floating" fill="outline" formControlName="category" interface="popover">
+      @for (c of categories; track c) {
+        <ion-select-option [value]="c">{{ c }}</ion-select-option>
+      }
+    </ion-select>
+
+    <ion-textarea class="field" label="Description" labelPlacement="floating" fill="outline" formControlName="description"
+      [autoGrow]="true" placeholder="Color, brand, marks..." maxlength="300"></ion-textarea>
+
+    <h4>Photo</h4>
+    @if (photo(); as p) {
+      <img class="preview" [src]="p" alt="Selected item photo" />
+      <ion-button fill="outline" color="danger" size="small" (click)="clearPhoto()">
+        <ion-icon slot="start" name="trash"></ion-icon>Remove photo
+      </ion-button>
+    } @else {
+      <ion-button fill="outline" (click)="takePhoto()">
+        <ion-icon slot="start" name="camera"></ion-icon>Add photo
+      </ion-button>
+    }
+
+    <h4>Where?</h4>
+    <ion-button fill="outline" (click)="useMyLocation()" [disabled]="locating()">
+      @if (locating()) { <ion-spinner slot="start" name="dots"></ion-spinner>Locating... }
+      @else { <ion-icon slot="start" name="locate"></ion-icon>Use my location }
+    </ion-button>
+    <div class="map-box">
+      <app-map-view [lat]="coords()?.lat ?? null" [lng]="coords()?.lng ?? null" [interactive]="true" (picked)="onPicked($event)"></app-map-view>
+    </div>
+    <ion-note>Tap the map or drag the pin to adjust. Location is optional.</ion-note>
+
+    <ion-input class="field" label="Place details" labelPlacement="floating" fill="outline" formControlName="locationNote"
+      placeholder="e.g. Library, 2nd floor" maxlength="80"></ion-input>
+
+    <ion-input class="field" label="Your contact (phone or email) *" labelPlacement="floating" fill="outline"
+      formControlName="contact" maxlength="80"></ion-input>
+    @if (showError('contact')) {
+      <ion-note color="danger">Enter a phone number or email so the owner can reach you.</ion-note>
+    }
+
+    <ion-button class="submit" expand="block" type="submit" [disabled]="saving()">
+      @if (saving()) { <ion-spinner name="crescent"></ion-spinner> } @else { Save report }
+    </ion-button>
+  </form>
+</ion-content>

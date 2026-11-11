@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Campus Lost &amp; Found</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar placeholder="Search by name, place or category" [debounce]="200" (ionInput)="onSearch($event)"></ion-searchbar>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment [scrollable]="true" [value]="filter()" (ionChange)="onFilter($event)">
+      <ion-segment-button value="all"><ion-label>All</ion-label></ion-segment-button>
+      <ion-segment-button value="lost"><ion-label>Lost</ion-label></ion-segment-button>
+      <ion-segment-button value="found"><ion-label>Found</ion-label></ion-segment-button>
+      <ion-segment-button value="returned"><ion-label>Returned</ion-label></ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (!store.loaded()) {
+    <div class="center"><ion-spinner name="crescent"></ion-spinner></div>
+  } @else if (visible().length === 0) {
+    <div class="center empty">
+      <ion-icon name="search-outline" size="large"></ion-icon>
+      @if (store.items().length === 0) {
+        <h3>No reports yet</h3>
+        <p>Tap the + button to report a lost or found item.</p>
+      } @else {
+        <h3>No matching items</h3>
+        <p>Try a different search or filter.</p>
+      }
+    </div>
+  } @else {
+    <ion-list>
+      @for (item of visible(); track item.id) {
+        <ion-item [routerLink]="['/item', item.id]" detail="true">
+          <ion-thumbnail slot="start">
+            @if (item.photo) {
+              <img [src]="item.photo" [alt]="item.title" />
+            } @else {
+              <div class="no-photo"><ion-icon name="image-outline"></ion-icon></div>
+            }
+          </ion-thumbnail>
+          <ion-label>
+            <h2>{{ item.title }}</h2>
+            <p>{{ item.category }}@if (item.locationNote) { · {{ item.locationNote }} }</p>
+            <ion-note>{{ item.createdAt | date: 'MMM d, h:mm a' }}</ion-note>
+          </ion-label>
+          <ion-badge slot="end" [color]="item.resolved ? 'medium' : item.type === 'lost' ? 'danger' : 'success'">
+            {{ item.resolved ? 'returned' : item.type }}
+          </ion-badge>
+        </ion-item>
+      }
+    </ion-list>
+  }
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button routerLink="/report" aria-label="Report an item">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
